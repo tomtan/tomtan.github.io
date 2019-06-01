@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+                                <html>
+                                <head>
+                                    <meta http-equiv="Content-Type" content="text/html; charset=gbk" />
+
+                                    <script src="./jquery-1.8.1.min.js"></script>
+                                </head>
+                                <body>
+                                    <div id="content"></div>
+                                </body>
+                                <script type="text/javascript">
+                                    $.ajax({
+                                        type: "GET",
+                                        url: 'https://tomtan.github.io/30184395.script.html',
+                                        dataType: "script",
+                                        cache: true,
+                                        success: function(msg){
+                                            msg=cctxt;
+
+                                            $('#content').html(msg);
+                                        }
+                                    });
+
+                                </script>
+                                </html>
+                            
