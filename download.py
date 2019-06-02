@@ -15,7 +15,10 @@ def open_url(url):
 def record(recordChapterId):
     recordFileName = 'update.txt'
     recordFile = open(recordFileName, 'w')
-    recordFile.write(recordChapterId)
+    if recordChapterId is not None:
+        recordFile.write(recordChapterId)
+    else:
+        print('')
     recordFile.close()
     print('记录完毕! 当前章节为： ' + recordChapterId)
 
@@ -57,7 +60,7 @@ def main():
     # 3195
     latestChapterId = int(result['info']['chapters'])
 
-    recordChapterId = 0
+    recordChapterId = ''
     recordFileName = 'update.txt'
 
     if not os.path.isfile(recordFileName):
@@ -89,6 +92,7 @@ def main():
 
         print('>>>' + chapterName)
         print('>>>' + chapterId)
+        recordChapterId = chapterId
         
         #https://m.whzh-cw.com/files/article/html555/70/70538/
         url = 'https://m.whzh-cw.com/files/article/html555/70/' + str(result['info']['articleid']) + '/' + str(chapterId) + '.html'
