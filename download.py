@@ -12,16 +12,6 @@ def open_url(url):
 
     return response
 
-def record(recordChapterId):
-    recordFileName = 'update.txt'
-    recordFile = open(recordFileName, 'w')
-    if recordChapterId is not None:
-        recordFile.write(recordChapterId)
-    else:
-        print('')
-    recordFile.close()
-    print('记录完毕! 当前章节为： ' + recordChapterId)
-
 def updateContent(fname, chapterName):
     with open('content.html', 'a+', encoding='utf-8') as contentFile:
         # 写入目录
@@ -64,23 +54,23 @@ def main():
     recordFileName = 'update.txt'
 
     if not os.path.isfile(recordFileName):
-        print('记录文件不存在')
+        print('>>>记录文件不存在')
     else:
         with open(recordFileName, 'r') as f:
             record = f.read()
             if not len(record):
-                print('记录为空！')
+                print('>>>记录为空！')
                 return
             elif record.isdigit():    
                 recordChapterId = record
             else:
-                print('出现异常！')
+                print('>>>出现异常！')
                 return
 
     print('>>>记录章节ID：' + recordChapterId)
     
     if int(recordChapterId) >= latestChapterNum:
-        print('已更新至最新章节！')
+        print('>>>已更新至最新章节！')
         return
     
     for each in result['list']:
@@ -92,7 +82,11 @@ def main():
 
         print('>>>' + chapterName)
         print('>>>' + chapterId)
-        recordChapterId = chapterId
+
+        recordFile = open('update.txt', 'w')
+        recordFile.write(chapterId)
+        print('>>>记录完毕! 当前章节为： ' + chapterId)
+        recordFile.close()
         
         #https://m.whzh-cw.com/files/article/html555/70/70538/
         url = 'https://m.whzh-cw.com/files/article/html555/70/' + str(result['info']['articleid']) + '/' + str(chapterId) + '.html'
@@ -102,17 +96,17 @@ def main():
         try:
             body = open_url(url)
         except HTTPError or UTLError or Exception:
-            print('请求异常！')
+            print('>>>请求异常！')
             break
         
         html = body.read().decode('gbk')
 
         if html.startswith('var _0x') or html.startswith('var cctxt='):
-            print('数据被加密，需要JavaScript解码')
+            print('>>>数据被加密，需要JavaScript解码')
             
-            scriptName = chapterId + '.script.html'
-            with open(scriptName, 'w', encoding='utf-8') as f:
-                f.write(html)
+            #scriptName = chapterId + '.script.html'
+            #with open(scriptName, 'w', encoding='utf-8') as f:
+            #    f.write(html)
 
             fname = chapterId + '.html'
             with open(fname, 'w', encoding='gbk') as f:
@@ -120,29 +114,19 @@ def main():
                             <html>
                             <head>
                                 <meta http-equiv="Content-Type" content="text/html; charset=gbk" />
-
                                 <script src="./jquery-1.8.1.min.js"></script>
                             </head>
                             <body>
                                 <div id="content"></div>
                             </body>
                             <script type="text/javascript">
-                                $.ajax({
-                                    type: "GET",
-                                    url: '%s',
-                                    dataType: "script",
-                                    cache: true,
-                                    success: function(msg){
-                                        msg=cctxt;
-
-                                        $('#content').html(msg);
-                                    }
-                                });
-
+                                %s
+                                msg=cctxt;
+                                $('#content').html(msg);
                             </script>
                             </html>
                         '''
-                f.write(content % ('https://tomtan.github.io/' + scriptName))
+                f.write(content % html)
 
             # 写入目录
             updateContent(fname, chapterName)
@@ -167,11 +151,11 @@ def main():
             updateContent(fname, chapterName)
             print('>>', url)
         # 保存需要记录到文件中章节ID
-        recordChapterId = chapterId
+        #recordChapterId = chapterId
         
         
     # 更新目录并执行完毕
-    record(recordChapterId)
+    #record(recordChapterId)
     print('已执行完毕！')
             
         
